@@ -93,14 +93,14 @@ resource "null_resource" "this_asst_prepare" {
   ]
 }
 
-# vielleicht muss man auch bei Pinecone warten
-# resource "time_sleep" "aws_iam_role_policy_bedrock_kb_this_kb_oss" {
-#   create_duration = "20s"
-#   depends_on      = [aws_iam_role_policy.bedrock_kb_this_kb_oss]
-# }
-
 #Wartezeit auf Agent für Prepare
 resource "time_sleep" "wait_for_agent_creation" {
   create_duration = "30s"
   depends_on      = [aws_bedrockagent_agent.this_asst]
 }
+
+# Beim nächsten Neu-Aufsetzen entkommentieren
+# resource "time_sleep" "wait_for_bedrock_kb_role" {
+#   create_duration = "30s"
+#   depends_on      = [aws_iam_role.bedrock_kb_this_kb]
+# }

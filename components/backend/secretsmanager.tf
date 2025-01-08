@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "pinecone_api_key" {
-  name        = "pinecone-api-key123"
+  name        = "pinecone-api-key1234"
   description = "Pinecone API Key for Bedrock Knowledge Base"
 }
 
