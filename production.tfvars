@@ -1,0 +1,6 @@
+oss_collection_name = "my-bedrock-kb-collection"
+kb_model_id         = "amazon.titan-embed-text-v1"
+kb_name             = "MyKnowledgeBase"
+agent_model_id      = "anthropic.claude-3-haiku-20240307-v1:0"
+agent_name          = "MyAgent"
+action_group_name   = "MyActionGroup"

@@ -1,0 +1,67 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch:
+
+env:
+  HEAD_REPOSITORY: "${{ github.event.pull_request.head.repo.full_name }}"
+  HEAD_SHA: "${{ github.event.pull_request.head.sha }}"
+  GITHUB_TOKEN: "${{ github.token }}"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform_plan:
+    name: "Run Terraform"
+    runs-on: ubuntu-latest
+    steps:
+    - name: "🔒️ - Fetch AWS credentials"
+      id: "aws-credentialss"
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.ACCANTEC_ROLE }}
+        aws-region: us-west-2
+    - uses: actions/checkout@v4
+      with:
+        ref: "${{ github.event.pull_request.head.sha }}"
+        persist-credentials: true
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.5
+        terraform_wrapper: false
+        
+    - name: Configure Git Credentials
+      run: |
+        git config --local --remove-section http."https://github.com/"
+        git config --global url."https://${ACCANTECGITHUBUSER}:${ACCANTECGITHUBTOKEN}@github.com/acclemmerich".insteadOf "https://github.com/acclemmerich"
+      env:
+        ACCANTECGITHUBUSER: ${{ secrets.ACCANTECGITHUBUSER }}
+        ACCANTECGITHUBTOKEN: ${{ secrets.ACCANTECGITHUBTOKEN }}
+
+
+    - name: terraform init
+      id: init
+      run: |
+        terraform init \
+          -input=false \
+          -backend-config="bucket=saa-genai" \
+          -backend-config="key=infra.tfstate" \
+          -backend-config="region=us-west-2" \
+          -backend-config="encrypt=true"
+
+    - name: terraform fmt
+      id: fmt
+      run: terraform fmt
+    - name: terraform validate
+      id: validate
+      run: terraform validate
+    - name: terraform plan
+      id: plan
+      run: terraform plan -input=false -compact-warnings -var-file=production.tfvars -out=tfplan
+    - name: terraform show
+      id: show
+      run: terraform show tfplan
