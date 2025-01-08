@@ -173,3 +173,26 @@ resource "aws_iam_role_policy_attachment" "attach_secrets_manager_policy2" {
   role       = aws_iam_role.bedrock_agent_this_asst.name
   policy_arn = aws_iam_policy.secrets_manager_policy.arn
 }
+
+resource "aws_iam_role" "saa-ec2-role" {
+  name = "SAA-EC2-Streamlit-Frontend-EC2Role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+  max_session_duration = 3600
+  path                 = "/"
+}
+
+resource "aws_iam_instance_profile" "saa-instance-profile" {
+  name = "SAA-EC2-Streamlit-Frontend-InstanceProfile"
+  role = aws_iam_role.saa-ec2-role.name
+}
