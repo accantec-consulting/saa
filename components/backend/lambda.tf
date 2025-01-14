@@ -16,3 +16,27 @@ resource "aws_lambda_permission" "this_api" {
   source_account = local.account_id
   source_arn     = "arn:${local.partition}:bedrock:${local.region}:${local.account_id}:agent/*"
 }
+
+resource "aws_lambda_function" "saa-invoke-agent" {
+  function_name = "saa-invokeBedrockAgent"
+  role          = aws_iam_role.saa-invoke-bedrock-role.arn
+  filename      = data.archive_file.saa-invoke-agent_zip.output_path
+  handler       = "saa-invoke-agent.lambda_handler"
+  memory_size   = 128
+  runtime       = "python3.13"
+  architectures = ["arm64"]
+  timeout       = 60
+  environment {
+    variables = {
+      AGENT_ALIAS_ID = aws_bedrockagent_agent_alias.this_asst.id
+      AGENT_ID       = aws_bedrockagent_agent.this_asst.id
+    }
+  }
+  ephemeral_storage {
+    size = 512
+  }
+  logging_config {
+    log_format = "Text"
+    log_group  = "/aws/lambda/saa-invokeBedrockAgent"
+  }
+}

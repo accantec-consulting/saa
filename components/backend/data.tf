@@ -20,3 +20,10 @@ data "archive_file" "this_api_zip" {
   output_path      = "${path.module}/tmp/this_api.zip"
   output_file_mode = "0666"
 }
+
+data "archive_file" "saa-invoke-agent_zip" {
+  type             = "zip"
+  source_file      = "${path.module}/lambda/saa-invoke-agent/saa-invoke-agent.py"
+  output_path      = "${path.module}/tmp/saa-invoke-agent.zip"
+  output_file_mode = "0666"
+}

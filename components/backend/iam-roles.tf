@@ -196,3 +196,94 @@ resource "aws_iam_instance_profile" "saa-instance-profile" {
   name = "SAA-EC2-Streamlit-Frontend-InstanceProfile"
   role = aws_iam_role.saa-ec2-role.name
 }
+
+resource "aws_iam_role" "saa-invoke-bedrock-role" {
+  name = "saa-invokeBedrockAgent-v1"
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+    }]
+    Version = "2012-10-17"
+  })
+  max_session_duration = 3600
+  path                 = "/service-role/"
+}
+
+resource "aws_iam_policy" "api_gateway_invoke_full_access" {
+  name        = "APIGatewayInvokeFullAccessPolicy"
+  description = "Provides full access to API Gateway invoke actions"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = "apigateway:POST"
+        Resource = "*"
+        Effect   = "Allow"
+      },
+      {
+        Action   = "apigateway:GET"
+        Resource = "*"
+        Effect   = "Allow"
+      },
+      {
+        Action   = "apigateway:DELETE"
+        Resource = "*"
+        Effect   = "Allow"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "bedrock_full_access" {
+  name        = "BedrockFullAccessPolicy"
+  description = "Provides full access to Bedrock"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:*"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "cloudwatch_logs_access" {
+  name        = "CloudWatchLogsAccess"
+  description = "Full access to CloudWatch Logs"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = "logs:*"
+        Resource = "*"
+        Effect   = "Allow"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "api_gateway_attach" {
+  policy_arn = aws_iam_policy.api_gateway_invoke_full_access.arn
+  role       = aws_iam_role.saa-invoke-bedrock-role.name
+}
+
+resource "aws_iam_role_policy_attachment" "bedrock_attach" {
+  policy_arn = aws_iam_policy.bedrock_full_access.arn
+  role       = aws_iam_role.saa-invoke-bedrock-role.name
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_logs_attach" {
+  policy_arn = aws_iam_policy.cloudwatch_logs_access.arn
+  role       = aws_iam_role.saa-invoke-bedrock-role.name
+}

@@ -56,6 +56,11 @@ resource "aws_bedrockagent_agent" "this_asst" {
   ]
 }
 
+resource "aws_bedrockagent_agent_alias" "this_asst" {
+  agent_alias_name = "this_asst_v1"
+  agent_id         = aws_bedrockagent_agent.this_asst.id
+}
+
 resource "aws_bedrockagent_agent_action_group" "this_api" {
   action_group_name          = var.action_group_name
   agent_id                   = aws_bedrockagent_agent.this_asst.id
