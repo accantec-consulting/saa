@@ -19,6 +19,8 @@ resource "aws_instance" "ec2-streamlit-app" {
     volume_type           = "gp2"
   }
 
+  user_data = file("${path.module}/../../saa_frontend/user_data.sh")
+
   tags = {
     Name = "EC2-Streamlit-App"
   }
@@ -28,5 +30,3 @@ resource "aws_eip" "ec2_streamlit_app" {
   instance = aws_instance.ec2-streamlit-app.id
   domain   = "vpc"
 }
-
-
