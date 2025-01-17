@@ -287,3 +287,44 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_logs_attach" {
   policy_arn = aws_iam_policy.cloudwatch_logs_access.arn
   role       = aws_iam_role.saa-invoke-bedrock-role.name
 }
+
+resource "aws_iam_role" "eventbridge_ec2_role" {
+  name = "EventBridgeEC2Role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement : [
+      {
+        Effect : "Allow",
+        Principal : {
+          Service : "scheduler.amazonaws.com"
+        },
+        Action : "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "ec2_start_stop_policy" {
+  name        = "EC2StartStopPolicy"
+  description = "Erlaubt das Starten und Stoppen der spezifischen EC2-Instanz"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement : [
+      {
+        Effect : "Allow",
+        Action : [
+          "ec2:StartInstances",
+          "ec2:StopInstances"
+        ],
+        Resource : aws_instance.ec2-streamlit-app.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_ec2_start_stop_policy" {
+  role       = aws_iam_role.eventbridge_ec2_role.name
+  policy_arn = aws_iam_policy.ec2_start_stop_policy.arn
+}
