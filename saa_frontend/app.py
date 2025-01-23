@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 
 def send_to_api(input_data):
-    api_url = "https://io13stx6hk.execute-api.eu-central-1.amazonaws.com/dev/"
+    api_url = "https://zu6hdf0rye.execute-api.us-east-1.amazonaws.com/dev/"
 
     data = {
         "input": input_data.get("question", ""),
@@ -28,7 +28,7 @@ def send_to_api(input_data):
 st.set_page_config(page_title="accantec chatbot", page_icon=":speech_balloon:", layout="wide")
 
 # Title
-st.title("dein chatbot") 
+st.title("Dein Chatbot") 
 
 # Display a text box for input
 prompt = st.text_input("Frage",max_chars=2000, placeholder="Stellen Sie hier eine Frage.", label_visibility="collapsed")
