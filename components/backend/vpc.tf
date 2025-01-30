@@ -1,6 +1,6 @@
 resource "aws_vpc" "saa-vpc" {
   cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = false
+  enable_dns_hostnames = true
   enable_dns_support   = true
   instance_tenancy     = "default"
 
@@ -11,6 +11,7 @@ resource "aws_vpc" "saa-vpc" {
 
 resource "aws_subnet" "saa-subnet" {
   vpc_id                              = aws_vpc.saa-vpc.id
+  availability_zone                   = "us-east-1a"
   assign_ipv6_address_on_creation     = false
   cidr_block                          = "10.0.1.0/24"
   map_public_ip_on_launch             = true
@@ -18,6 +19,19 @@ resource "aws_subnet" "saa-subnet" {
 
   tags = {
     Name = "SAA-Subnet"
+  }
+}
+
+resource "aws_subnet" "saa-subnet2" {
+  vpc_id                              = aws_vpc.saa-vpc.id
+  availability_zone                   = "us-east-1b"
+  assign_ipv6_address_on_creation     = false
+  cidr_block                          = "10.0.2.0/24"
+  map_public_ip_on_launch             = true
+  private_dns_hostname_type_on_launch = "ip-name"
+
+  tags = {
+    Name = "SAA-Subnet2"
   }
 }
 
@@ -29,8 +43,13 @@ resource "aws_route_table" "saa-routetable" {
   }
 }
 
-resource "aws_route_table_association" "example" {
+resource "aws_route_table_association" "subnet-internet" {
   subnet_id      = aws_subnet.saa-subnet.id
+  route_table_id = aws_route_table.saa-routetable.id
+}
+
+resource "aws_route_table_association" "subnet-internet2" {
+  subnet_id      = aws_subnet.saa-subnet2.id
   route_table_id = aws_route_table.saa-routetable.id
 }
 
