@@ -4,8 +4,7 @@ import pandas as pd
 import requests
 
 def send_to_api(input_data):
-    api_url = "https://vpce-011a7ca67e008f85b.execute-api.us-east-1.amazonaws.com/dev"
-    #https://zu6hdf0rye.execute-api.us-east-1.amazonaws.com/dev/
+    api_url = "https://zu6hdf0rye.execute-api.us-east-1.amazonaws.com/dev/"
 
     data = {
         "input": input_data.get("question", ""),

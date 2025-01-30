@@ -81,30 +81,6 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   ip_protocol       = "-1"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_tcp_ipv4_port22" {
-  security_group_id = aws_security_group.saa-sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "tcp"
-  from_port         = 22
-  to_port           = 22
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_tcp_ipv4_port443" {
-  security_group_id = aws_security_group.saa-sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "tcp"
-  from_port         = 443
-  to_port           = 443
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_tcp_ipv4_port80" {
-  security_group_id = aws_security_group.saa-sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "tcp"
-  from_port         = 80
-  to_port           = 80
-}
-
 resource "aws_vpc_security_group_ingress_rule" "allow_tcp_ipv4_port8501" {
   security_group_id = aws_security_group.saa-sg.id
   cidr_ipv4         = "0.0.0.0/0"
